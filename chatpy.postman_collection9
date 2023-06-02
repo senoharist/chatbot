@@ -1,0 +1,332 @@
+{
+	"info": {
+		"_postman_id": "268eaa84-6fc5-425d-a553-d8af59d838e0",
+		"name": "chatpy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9651672"
+	},
+	"item": [
+		{
+			"name": "token",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "373A82F6-F608-4D4F-AF09-18663189031B",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "TECHNICIAN_KEY",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    {\r\n        \"id\": 7,\r\n        \"nama\": \"endang\",\r\n        \"alamat\": \"emasbanyu\"\r\n    },\r\n    {\r\n        \"id\": 6,\r\n        \"nama\": \"dudung\",\r\n        \"alamat\": \"depok\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/login?username=superadmin&password=superadmin",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"login"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "superadmin"
+						},
+						{
+							"key": "password",
+							"value": "superadmin"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "token",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "373A82F6-F608-4D4F-AF09-18663189031B",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "TECHNICIAN_KEY",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "username",
+							"value": "superadmin",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "superadmin",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/dashboard?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InN1cGVyYWRtaW4iLCJleHAiOjE2ODQ3NzA5NjN9.GTCQjkxR_vI9UHPf1w8GSOWmQ1b5S7bWG1fwGY-GwOg",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"dashboard"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InN1cGVyYWRtaW4iLCJleHAiOjE2ODQ3NzA5NjN9.GTCQjkxR_vI9UHPf1w8GSOWmQ1b5S7bWG1fwGY-GwOg"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "dmss",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/dms",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"dms"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "wac",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/wac",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"wac"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "wac",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "\r\n    {\r\n        \"dist_code\": \"448001\",\r\n        \"dist_email\": \"448001@mailinator.com\",\r\n        \"dist_name\": \"Anugrah Pasuruan\",\r\n        \"product\": \"B2B3B4B\",\r\n        \"question\": \"promo diskon tidak muncul lagi , tidak sesuai dengan brief ke 80\",\r\n        \"wa_no\": \"081122334480\"\r\n    }\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/wac",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"wac"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "wac/no_wa",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/wac/081122334455",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"wac",
+						"081122334455"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "dms",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/dms",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"dms"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "dms",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"depo_code\": \"3344\",\r\n    \"depo_name\": \"depo surabaya selatan\",\r\n    \"dist_code\": \"440401\",\r\n    \"dist_name\": \"anugrah pamekasan\",\r\n    \"dms_email\": \"jijok\",\r\n    \"wa_no\": \"08123123111\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/dms",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"dms"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "dms/dist_code",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"depo_code\": \"3344\",\r\n    \"depo_name\": \"depo surabaya selatan\",\r\n    \"dist_code\": \"440401\",\r\n    \"dist_name\": \"anugrah pamekasan\",\r\n    \"dms_email\": \"jijok\",\r\n    \"wa_no\": \"08123123111\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/dms/440401",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"dms",
+						"440401"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
