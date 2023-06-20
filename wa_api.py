@@ -4,30 +4,12 @@ import dataset
 app = Flask(__name__)
 db = dataset.connect('sqlite:///api.db')
 
-'''
-Examples:
-GET request to /api/books returns the details of all books
-POST request to /api/books creates a book with the ID 3 (As per request body)
-
-Sample request body -
-{
-        "book_id": "1",
-        "name": "A Game of Thrones",
-        "author": "George R. R. Martin"
-}
-
-GET request to /api/books/3 returns the details of book 3
-PUT request to /api/books/3 to update fields of book 3
-DELETE request to /api/books/3 deletes book 3
-
-'''
-
 # table = db['books']
 table = db['traffics']
 
 
 def fetch_db(wa_no):  # Each book scnerio
-    return table.find_one(wa_no=wa_no)
+    return table.find_one(wa_no=wa_no, order_by = '-id')
 
 
 def fetch_db_all():

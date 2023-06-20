@@ -9,7 +9,7 @@ tabled = db['dmss']
 
 
 def fetch_dbd(dist_code):  # Each dms scnerio
-    return tabled.find_one(dist_code=dist_code)
+    return tabled.find_one(dist_code=dist_code, order_by = 'id')
 
 
 def fetch_dbd_all():
@@ -93,7 +93,7 @@ table = db['traffics']
 
 
 def fetch_db(wa_no):  # Each book scnerio
-    return table.find_one(wa_no=wa_no)
+    return table.find_one(wa_no=wa_no, order_by = '-id')
 
 
 def fetch_db_all():
