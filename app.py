@@ -8,17 +8,34 @@ db = dataset.connect('sqlite:///api.db')
 tabled = db['dmss']
 
 
-def fetch_dbd(dist_code):  # Each dms scnerio
-    return tabled.find_one(dist_code=dist_code, order_by = 'id')
-
-
-def fetch_dbd_all():
+## modul select db table dms
+# modul select all dist
+def fetch_dbd_alld():
     dmss = []
     for dms in tabled:
         dmss.append(dms)
     return dmss
 
+# modul select dist by nomor wa
+def fetch_dbd(wa_no):  # Each dms scnerio
+    return tabled.find_one(wa_no=wa_no, order_by = '-id')
 
+# modul to list depo
+def fetch_depo():
+     distinct_values = list(table.distinct('depo_code', 'depo_name'))
+     return distinct_values
+
+# modul to list dist by depo code
+def fetch_dist(depo_code):
+    distinct_values = list(table.distinct('dist_code', 'dist_name', depo_code=depo_code)) # , order_by ='-depo_code'))
+    return distinct_values
+
+# modul to show input data by depo_code
+def fetch_dbdepo(depo_code):  # Each book scnerio
+    return table.find_one(depo_code=depo_code) # , order_by = '-id')
+
+
+## start to define route api
 @app.route('/api/dbd_populate', methods=['GET'])
 def dbd_populate():
     tabled.insert({
@@ -39,41 +56,68 @@ def dbd_populate():
         "wa_no": "085566778899"
     })
 
-    return make_response(jsonify(fetch_dbd_all()),
+    return make_response(jsonify(fetch_dbd_alld()),
                          200)
 
 
+# get and post dms data
 @app.route('/api/dms', methods=['GET', 'POST'])
 def api_dmss():
     if request.method == "GET":
-        return make_response(jsonify(fetch_dbd_all()), 200)
+        return make_response(jsonify(fetch_dbd_alld()), 200)
     elif request.method == 'POST':
         content = request.json
-        dist_code = content['dist_code']
+        wa_no = content['wa_no']
         tabled.insert(content)
-        return make_response(jsonify(fetch_dbd(dist_code), 201))  # 201 = Created
+        return make_response(jsonify(fetch_dbd(wa_no), 201))  # 201 = Created
 
-
-@app.route('/api/dms/<dist_code>', methods=['GET', 'PUT', 'DELETE'])
-def api_each_dms(dist_code):
+# get data dms by wa no
+@app.route('/api/dms/<wa_no>', methods=['GET', 'PUT', 'DELETE'])
+def api_each_dms(wa_no):
     if request.method == "GET":
-        dms_obj = fetch_dbd(dist_code)
+        dms_obj = fetch_dbd(wa_no)
         if dms_obj:
             return make_response(jsonify(dms_obj), 200)
         else:
             return make_response(jsonify(dms_obj), 404)
     elif request.method == "PUT":  # Updates the book
         content = request.json
-        tabled.update(content, ['dist_code'])
-
-        dms_obj = fetch_dbd(dist_code)
+        tabled.update(content, ['wa-no'])
+        dms_obj = fetch_dbd(wa_no)
         return make_response(jsonify(dms_obj), 200)
     elif request.method == "DELETE":
-        tabled.delete(id=dist_code)
-
+        tabled.delete(id=wa_no)
         return make_response(jsonify({}), 204)
 
+# modul to list depo
+@app.route('/api/depo', methods=['GET', 'POST'])
+def api_depo():
+    if request.method == "GET":
+        return make_response(jsonify(fetch_depo()), 200)
+    elif request.method == 'POST':
+        content = request.json
+        depo_code = content['depo_code']
+        table.insert(content)
+        return make_response(jsonify(fetch_dbdepo(depo_code), 201))  # 201 = Created
 
+# modul to list dist by depo code
+@app.route('/api/depo/<depo_code>', methods=['GET']) # , 'PUT', 'DELETE'])
+def api_each_dist(depo_code):
+    if request.method == "GET":
+        dms_obj = fetch_dist(depo_code)
+        if dms_obj:
+            return make_response(jsonify(dms_obj), 200)
+        else:
+            return make_response(jsonify(dms_obj), 404)
+
+    elif request.method == "PUT":  # Updates the book
+        content = request.json
+        table.update(content, ['dist_code'])
+        dms_obj = fetch_db(depo_code)
+        return make_response(jsonify(dms_obj), 200)
+    elif request.method == "DELETE":
+        table.delete(id=depo_code)
+        return make_response(jsonify({}), 204)
 
 
 '''
@@ -91,17 +135,19 @@ db = dataset.connect('sqlite:///api.db')
 # table = db['books']
 table = db['traffics']
 
-
+## modul select db table chat
+# fet list chat by wa no
 def fetch_db(wa_no):  # Each book scnerio
     return table.find_one(wa_no=wa_no, order_by = '-id')
 
-
+# list of all chat
 def fetch_db_all():
     traffics = []
     for wac in table:
         traffics.append(wac)
     return traffics
 
+## route end-point
 
 @app.route('/api/db_populated', methods=['GET'])
 def db_populated():
@@ -126,7 +172,7 @@ def db_populated():
     return make_response(jsonify(fetch_db_all()),
                          200)
 
-
+# list of all chat route
 @app.route('/api/wac', methods=['GET', 'POST'])
 def api_traffics():
     if request.method == "GET":
@@ -137,7 +183,7 @@ def api_traffics():
         table.insert(content)
         return make_response(jsonify(fetch_db(wa_no), 201))  # 201 = Created
 
-
+# list of chat by wa no
 @app.route('/api/wac/<wa_no>', methods=['GET', 'PUT', 'DELETE'])
 def api_each_wa(wa_no):
     if request.method == "GET":
@@ -149,12 +195,10 @@ def api_each_wa(wa_no):
     elif request.method == "PUT":  # Updates the book
         content = request.json
         table.update(content, ['wa_no'])
-
         wac_obj = fetch_db(wa_no)
         return make_response(jsonify(wac_obj), 200)
     elif request.method == "DELETE":
         table.delete(id=wa_no)
-
         return make_response(jsonify({}), 204)
 
 
