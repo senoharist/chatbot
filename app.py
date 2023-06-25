@@ -4,7 +4,7 @@ import dataset
 app = Flask(__name__)
 db = dataset.connect('sqlite:///api.db')
 
-# table = db['books']
+# table objecting
 tabled = db['dmss']
 
 
@@ -22,17 +22,17 @@ def fetch_dbd(wa_no):  # Each dms scnerio
 
 # modul to list depo
 def fetch_depo():
-     distinct_values = list(table.distinct('depo_code', 'depo_name'))
+     distinct_values = list(tabled.distinct('depo_code', 'depo_name'))
      return distinct_values
 
 # modul to list dist by depo code
 def fetch_dist(depo_code):
-    distinct_values = list(table.distinct('dist_code', 'dist_name', depo_code=depo_code)) # , order_by ='-depo_code'))
+    distinct_values = list(tabled.distinct('dist_code', 'dist_name', depo_code=depo_code)) # , order_by ='-depo_code'))
     return distinct_values
 
 # modul to show input data by depo_code
 def fetch_dbdepo(depo_code):  # Each book scnerio
-    return table.find_one(depo_code=depo_code) # , order_by = '-id')
+    return tabled.find_one(depo_code=depo_code) # , order_by = '-id')
 
 
 ## start to define route api
@@ -97,7 +97,7 @@ def api_depo():
     elif request.method == 'POST':
         content = request.json
         depo_code = content['depo_code']
-        table.insert(content)
+        tabled.insert(content)
         return make_response(jsonify(fetch_dbdepo(depo_code), 201))  # 201 = Created
 
 # modul to list dist by depo code
@@ -112,11 +112,11 @@ def api_each_dist(depo_code):
 
     elif request.method == "PUT":  # Updates the book
         content = request.json
-        table.update(content, ['dist_code'])
-        dms_obj = fetch_db(depo_code)
+        tabled.update(content, ['dist_code'])
+        dms_obj = fetch_dist(depo_code)
         return make_response(jsonify(dms_obj), 200)
     elif request.method == "DELETE":
-        table.delete(id=depo_code)
+        tabled.delete(id=depo_code)
         return make_response(jsonify({}), 204)
 
 
@@ -132,26 +132,27 @@ app = Flask(__name__)
 db = dataset.connect('sqlite:///api.db')
 
 '''
-# table = db['books']
-table = db['traffics']
+# table chat objecting
+tablew = db['traffics']
 
 ## modul select db table chat
 # fet list chat by wa no
-def fetch_db(wa_no):  # Each book scnerio
-    return table.find_one(wa_no=wa_no, order_by = '-id')
+def fetch_db(wa_no):  # Each chat scnerio
+    return tablew.find_one(wa_no=wa_no, order_by = '-id')
 
 # list of all chat
 def fetch_db_all():
     traffics = []
-    for wac in table:
+    for wac in tablew:
         traffics.append(wac)
     return traffics
 
 ## route end-point
 
+'''
 @app.route('/api/db_populated', methods=['GET'])
 def db_populated():
-    table.insert({
+    tablew.insert({
         "dist_email": "443501@mailinator.com",
         "dist_name": "MUSS jombang",
         "question": "tampilan sahabat warung tidak seperti biasanya",
@@ -160,7 +161,7 @@ def db_populated():
         "wa_no": "081122334455"
     })
 
-    table.insert({
+    tablew.insert({
         "dist_email": "440101@mailinator.com",
         "dist_name": "Affandison Gresik",
         "question": "kenapa saya tidak bisa login pagi ini ",
@@ -172,6 +173,7 @@ def db_populated():
     return make_response(jsonify(fetch_db_all()),
                          200)
 
+'''
 # list of all chat route
 @app.route('/api/wac', methods=['GET', 'POST'])
 def api_traffics():
@@ -180,7 +182,7 @@ def api_traffics():
     elif request.method == 'POST':
         content = request.json
         wa_no = content['wa_no']
-        table.insert(content)
+        tablew.insert(content)
         return make_response(jsonify(fetch_db(wa_no), 201))  # 201 = Created
 
 # list of chat by wa no
@@ -194,11 +196,13 @@ def api_each_wa(wa_no):
             return make_response(jsonify(wac_obj), 404)
     elif request.method == "PUT":  # Updates the book
         content = request.json
-        table.update(content, ['wa_no'])
+        tablew.update(content, ['wa_no'])
+
         wac_obj = fetch_db(wa_no)
         return make_response(jsonify(wac_obj), 200)
     elif request.method == "DELETE":
-        table.delete(id=wa_no)
+        tablew.delete(id=wa_no)
+
         return make_response(jsonify({}), 204)
 
 

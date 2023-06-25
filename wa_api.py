@@ -5,20 +5,20 @@ app = Flask(__name__)
 db = dataset.connect('sqlite:///api.db')
 
 # table = db['books']
-table = db['traffics']
+tablew = db['traffics']
 
 
-def fetch_db(wa_no):  # Each book scnerio
-    return table.find_one(wa_no=wa_no, order_by = '-id')
+def fetch_db(wa_no):  # Each chat scnerio
+    return tablew.find_one(wa_no=wa_no, order_by = '-id')
 
 
 def fetch_db_all():
     traffics = []
-    for wac in table:
+    for wac in tablew:
         traffics.append(wac)
     return traffics
 
-
+'''
 @app.route('/api/db_populated', methods=['GET'])
 def db_populated():
     table.insert({
@@ -41,7 +41,7 @@ def db_populated():
 
     return make_response(jsonify(fetch_db_all()),
                          200)
-
+'''
 
 @app.route('/api/wac', methods=['GET', 'POST'])
 def api_traffics():
@@ -50,7 +50,7 @@ def api_traffics():
     elif request.method == 'POST':
         content = request.json
         wa_no = content['wa_no']
-        table.insert(content)
+        tablew.insert(content)
         return make_response(jsonify(fetch_db(wa_no), 201))  # 201 = Created
 
 
@@ -64,12 +64,12 @@ def api_each_wa(wa_no):
             return make_response(jsonify(wac_obj), 404)
     elif request.method == "PUT":  # Updates the book
         content = request.json
-        table.update(content, ['wa_no'])
+        tablew.update(content, ['wa_no'])
 
         wac_obj = fetch_db(wa_no)
         return make_response(jsonify(wac_obj), 200)
     elif request.method == "DELETE":
-        table.delete(id=wa_no)
+        tablew.delete(id=wa_no)
 
         return make_response(jsonify({}), 204)
 

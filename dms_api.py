@@ -1,8 +1,10 @@
 from flask import Flask, make_response, jsonify, request
+from dataset import connect
 import dataset
 
+
 app = Flask(__name__)
-db = dataset.connect('sqlite:///api.db')
+db = connect('sqlite:///api.db')
 
 '''
 Examples:
@@ -26,9 +28,8 @@ DELETE request to /api/books/3 deletes book 3
 table = db['dmss']
 
 
-def fetch_db(dist_code):  # Each book scnerio
-    return table.find_one(dist_code=dist_code)
-
+def fetch_db(wa_no):  # Each book scnerio
+    return table.find_one(wa_no=wa_no, order_by = '-id')
 
 def fetch_db_all():
     dmss = []
@@ -36,7 +37,7 @@ def fetch_db_all():
         dmss.append(dms)
     return dmss
 
-
+'''
 @app.route('/api/db_populate', methods=['GET'])
 def db_populate():
     table.insert({
@@ -59,7 +60,7 @@ def db_populate():
 
     return make_response(jsonify(fetch_db_all()),
                          200)
-
+'''
 
 @app.route('/api/dms', methods=['GET', 'POST'])
 def api_dmss():
@@ -70,6 +71,50 @@ def api_dmss():
         dist_code = content['dist_code']
         table.insert(content)
         return make_response(jsonify(fetch_db(dist_code), 201))  # 201 = Created
+
+def fetch_depo():
+     distinct_values = list(table.distinct('depo_code', 'depo_name'))
+     return distinct_values
+
+
+def fetch_dist(depo_code):
+    distinct_values = list(table.distinct('dist_code', 'dist_name', depo_code=depo_code)) # , order_by ='-depo_code'))
+    return distinct_values
+
+
+def fetch_dbdepo(depo_code):  # Each book scnerio
+    return table.find_one(depo_code=depo_code) # , order_by = '-id')
+
+
+@app.route('/api/depo', methods=['GET', 'POST'])
+def api_depo():
+    if request.method == "GET":
+        return make_response(jsonify(fetch_depo()), 200)
+    elif request.method == 'POST':
+        content = request.json
+        depo_code = content['depo_code']
+        table.insert(content)
+        return make_response(jsonify(fetch_dbdepo(depo_code), 201))  # 201 = Created
+
+@app.route('/api/depo/<depo_code>', methods=['GET']) # , 'PUT', 'DELETE'])
+def api_each_dist(depo_code):
+    if request.method == "GET":
+        dms_obj = fetch_dist(depo_code)
+        if dms_obj:
+            return make_response(jsonify(dms_obj), 200)
+        else:
+            return make_response(jsonify(dms_obj), 404)
+
+    elif request.method == "PUT":  # Updates the book
+        content = request.json
+        table.update(content, ['dist_code'])
+
+        dms_obj = fetch_db(depo_code)
+        return make_response(jsonify(dms_obj), 200)
+    elif request.method == "DELETE":
+        table.delete(id=depo_code)
+
+        return make_response(jsonify({}), 204)
 
 
 @app.route('/api/dms/<dist_code>', methods=['GET', 'PUT', 'DELETE'])
