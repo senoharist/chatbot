@@ -79,14 +79,21 @@ def api_each_dms(wa_no):
         if dms_obj:
             return make_response(jsonify(dms_obj), 200)
         else:
+            # a=print("data tidak ada")
             return make_response(jsonify(dms_obj), 404)
-    elif request.method == "PUT":  # Updates the book
+
+    elif request.method == "PUT":  # Updates the wa_no
         content = request.json
-        tabled.update(content, ['wa-no'])
+        dist_code = content.get['dist_code']
+        new_wa_no = wa_no
+        # tabled.update(content, ['dist_code'])
+        query = f"UPDATE dmss SET wa_no = '{new_wa_no}' WHERE dist_code = '{dist_code}'"
+        db.query(query)
         dms_obj = fetch_dbd(wa_no)
         return make_response(jsonify(dms_obj), 200)
+
     elif request.method == "DELETE":
-        tabled.delete(id=wa_no)
+        tabled.delete(wa_no="wa_no")
         return make_response(jsonify({}), 204)
 
 # modul to list depo

@@ -21,6 +21,11 @@ def fetch_dbd_alld():
 def fetch_dbd(wa_no):  # Each dms scnerio
     return tabled.find_one(wa_no=wa_no, order_by='-id')
 
+# modul update wa by PUT methods used
+
+def update_wa(wa_no):
+    wa_update = tabled.update(wa_no = wa_no, where={'dist_code': 'dist_code1'})
+    return wa_update
 
 # modul to list depo
 def fetch_depo():
@@ -40,29 +45,6 @@ def fetch_dbdepo(depo_code):  # Each book scnerio
 
 
 ## start to define route api
-@app.route('/api/dbd_populate', methods=['GET'])
-def dbd_populate():
-    tabled.insert({
-        "dist_code": "443501",
-        "dist_name": "MUSS jombang",
-        "depo_code": "3344",
-        "depo_name": "depo surabaya",
-        "dms_email": "akbar",
-        "wa_no": "081122334455"
-    })
-
-    tabled.insert({
-        "dist_code": "440101",
-        "dist_name": "Affandison Gresik",
-        "depo_code": "3243",
-        "depo_name": "depo surabaya",
-        "dms_email": "akbar",
-        "wa_no": "085566778899"
-    })
-
-    return make_response(jsonify(fetch_dbd_alld()),
-                         200)
-
 
 # get and post dms data
 @app.route('/api/dms', methods=['GET', 'POST'])
@@ -84,30 +66,25 @@ def api_each_dms(wa_no):
         if dms_obj:
             return make_response(jsonify(dms_obj), 200)
         else:
-            # a=print("data tidak ada")
             return make_response(jsonify(dms_obj), 404)
 
-
-'''
-    elif request.method == "PUT":  # Updates the book
+    elif request.method == "PUT":  # Updates the record
         content = request.json
+        dist_code = content.get('dist_code')
+        new_wa_no = wa_no  # Use the value from the route as the new wa_no
 
-        tabled.update(content, ['dist_code'])
+        # Perform the update using the dist_code as the condition
+        # tabled.update({'wa_no': new_wa_no}, ['dist_code = :dist_code1'], dist_code=dist_code)
+        query = f"UPDATE dmss SET wa_no = '{new_wa_no}' WHERE dist_code = '{dist_code}'"
+        db.query(query)
+
+        # Fetch the updated record and return the response
         dms_obj = fetch_dbd(wa_no)
         return make_response(jsonify(dms_obj), 200)
-'''
-elif request.method == 'PUT':  # Updates the book
-content = request.json
-dist_code = content.get('dist_code')
-# Update the wa_no where dist_code matches
-tabled.update({'wa_no': content['wa_no']}, ['dist_code'], dist_code)
-dms_obj = fetch_dbd(wa_no)
-return make_response(jsonify(dms_obj), 200)
 
-elif request.method == "DELETE":
-tabled.delete(wa_no="wa_no")
-return make_response(jsonify({}), 204)
-
+    elif request.method == "DELETE":
+        tabled.delete(wa_no="wa_no")
+        return make_response(jsonify({}), 204)
 
 # modul to list depo
 @app.route('/api/depo', methods=['GET', 'POST'])
@@ -172,6 +149,32 @@ def fetch_db_all():
 
 
 ## route end-point
+
+'''
+@app.route('/api/db_populated', methods=['GET'])
+def db_populated():
+    tablew.insert({
+        "dist_email": "443501@mailinator.com",
+        "dist_name": "MUSS jombang",
+        "question": "tampilan sahabat warung tidak seperti biasanya",
+        "dist_code": "depo surabaya",
+        "product": "B2B",
+        "wa_no": "081122334455"
+    })
+
+    tablew.insert({
+        "dist_email": "440101@mailinator.com",
+        "dist_name": "Affandison Gresik",
+        "question": "kenapa saya tidak bisa login pagi ini ",
+        "dist_code": "depo surabaya",
+        "product": "OSDP",
+        "wa_no": "085566778899"
+    })
+
+    return make_response(jsonify(fetch_db_all()),
+                         200)
+
+'''
 
 
 # list of all chat route
