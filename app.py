@@ -84,9 +84,8 @@ def api_each_dms(wa_no):
 
     elif request.method == "PUT":  # Updates the wa_no
         content = request.json
-        dist_code = content.get['dist_code']
+        dist_code = content.get('dist_code')
         new_wa_no = wa_no
-        # tabled.update(content, ['dist_code'])
         query = f"UPDATE dmss SET wa_no = '{new_wa_no}' WHERE dist_code = '{dist_code}'"
         db.query(query)
         dms_obj = fetch_dbd(wa_no)
