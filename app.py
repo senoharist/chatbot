@@ -1,5 +1,10 @@
+import datetime
+
 from flask import Flask, make_response, jsonify, request
 import dataset
+import smtplib
+from email.mime.text import MIMEText
+import requests
 
 app = Flask(__name__)
 db = dataset.connect('sqlite:///api.db')
@@ -34,31 +39,9 @@ def fetch_dist(depo_code):
 def fetch_dbdepo(depo_code):  # Each book scnerio
     return tabled.find_one(depo_code=depo_code) # , order_by = '-id')
 
-
-## start to define route api
-@app.route('/api/dbd_populate', methods=['GET'])
-def dbd_populate():
-    tabled.insert({
-        "dist_code": "443501",
-        "dist_name": "MUSS jombang",
-        "depo_code": "3344",
-        "depo_name": "depo surabaya",
-        "dms_email": "akbar",
-        "wa_no": "081122334455"
-    })
-
-    tabled.insert({
-        "dist_code": "440101",
-        "dist_name": "Affandison Gresik",
-        "depo_code": "3243",
-        "depo_name": "depo surabaya",
-        "dms_email": "akbar",
-        "wa_no": "085566778899"
-    })
-
-    return make_response(jsonify(fetch_dbd_alld()),
-                         200)
-
+# modul to show one data by dist_code
+def fetch_dist_one(dist_code):  # Each book scnerio
+    return tabled.find_one(dist_code=dist_code) # , order_by = '-id')
 
 # get and post dms data
 @app.route('/api/dms', methods=['GET', 'POST'])
@@ -125,6 +108,25 @@ def api_each_dist(depo_code):
         tabled.delete(id=depo_code)
         return make_response(jsonify({}), 204)
 
+# modul to pick one dist by dist code
+@app.route('/api/dist/<dist_code>', methods=['GET']) # , 'PUT', 'DELETE'])
+def api_one_dist(dist_code):
+    if request.method == "GET":
+        dms_obj = fetch_dist_one(dist_code)
+        if dms_obj:
+            return make_response(jsonify(dms_obj), 200)
+        else:
+            return make_response(jsonify(dms_obj), 404)
+
+    elif request.method == "PUT":  # Updates the book
+        content = request.json
+        tabled.update(content, ['dist_code'])
+        dms_obj = fetch_dist(dist_code)
+        return make_response(jsonify(dms_obj), 200)
+    elif request.method == "DELETE":
+        tabled.delete(id=dist_code)
+        return make_response(jsonify({}), 204)
+
 
 '''
 
@@ -153,33 +155,62 @@ def fetch_db_all():
         traffics.append(wac)
     return traffics
 
+# modul to send notif other case coming
+def send_email_notification(data):
+    # Replace the following placeholders with your email server settings and email content
+    create_date = data['updated_at'] + datetime.timedelta(hours=7)
+    smtp_server = 'mail.pratesis.com'
+    smtp_port = 587
+    sender_email = 'scyllainsight@pratesis.com'
+    sender_password = 'Pratesis123!'
+    email_dist = data['dist_email']
+    email_dist = email_dist.strip()
+    receiver_email = 'seno.harist@gmail.com' + "," + email_dist + "," + 'indra_s@pratesis.com'  # l1-support.central@pratesis.com
+    cc_email = ['ruslan@pratesis.com','agus_suryono@pratesis.com']
+    bcc_email = ['suseno.harist@gmail.com']
+    subject = f"New case from {data['dist_name']}"
+    body = f"Dear support, \n\n\nNew request coming and need responed from this below users : " \
+           f"\n\nDistributor : {data['dist_name']}"\
+           f"\nCode : {data['dist_code']}"\
+           f"\nE-mail : {data['dist_email']}"\
+           f"\nContact wa: {data['wa_no']}"\
+           f"\nProduct : {data['product']}"\
+           f"\nDetail case : {data['question']}" \
+           f" \n\n\nWarm regards \n chatbot" \
+           f"\nCreated at : {create_date}"
+
+    msg = MIMEText(body)
+    msg['Subject'] = subject
+    msg['From'] = sender_email
+    msg['To'] = receiver_email
+    # msg['Cc'] = cc_email
+    # msg['Bcc'] = bcc_email
+
+    try:
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()
+            server.login(sender_email, sender_password)
+            server.sendmail(sender_email, receiver_email.split(","), msg.as_string())
+        print("Email notification sent successfully!")
+    except Exception as e:
+        print("Error sending email notification:", str(e))
+
+# modul hooks to sending notify by email
+@app.route('/kait', methods=['POST'])
+def handle_kait():
+    data1 = request.json
+    wa_no = data1['wa_no']
+    data = fetch_db(wa_no)
+    # Process the data received from the webhook
+    # Insert your logic here to handle the new data
+    # print("Received webhook data:", data)
+
+    # Send email notification
+    send_email_notification(data)
+    return jsonify({'message': 'notif received successfully'}), 200
+
 ## route end-point
 
-'''
-@app.route('/api/db_populated', methods=['GET'])
-def db_populated():
-    tablew.insert({
-        "dist_email": "443501@mailinator.com",
-        "dist_name": "MUSS jombang",
-        "question": "tampilan sahabat warung tidak seperti biasanya",
-        "dist_code": "depo surabaya",
-        "product": "B2B",
-        "wa_no": "081122334455"
-    })
-
-    tablew.insert({
-        "dist_email": "440101@mailinator.com",
-        "dist_name": "Affandison Gresik",
-        "question": "kenapa saya tidak bisa login pagi ini ",
-        "dist_code": "depo surabaya",
-        "product": "OSDP",
-        "wa_no": "085566778899"
-    })
-
-    return make_response(jsonify(fetch_db_all()),
-                         200)
-
-'''
 # list of all chat route
 @app.route('/api/wac', methods=['GET', 'POST'])
 def api_traffics():
@@ -189,6 +220,11 @@ def api_traffics():
         content = request.json
         wa_no = content['wa_no']
         tablew.insert(content)
+        #  Call the webhook when new data is inserted
+        webhook_url = 'http://127.0.0.1:5000/kait'
+        # webhook_data = {'wa_no': wa_no, 'product': product, 'question' : question}
+        response = requests.post(webhook_url, json=content)
+        # print("sending response:", response.text)
         return make_response(jsonify(fetch_db(wa_no), 201))  # 201 = Created
 
 # list of chat by wa no
