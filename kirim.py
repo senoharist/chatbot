@@ -4,11 +4,11 @@ from email.mime.text import MIMEText
 import sqlite3
 
 # Email configuration
-nama = 'indra'
-sender_email = 'suseno_haris@pratesis.com'
+nama = 'chel'
+sender_email = 'scyllainsight@pratesis.com'
 receiver_email = 'suseno_haris@pratesis.com'
-subject = 'chatbot from whatsapp!'
-message = f"dear {nama} -- \nini dari chatbot. \ntolong diabaikan saja --23."
+subject = 'coba kirim email dari sender pratomo'
+message = f"dear {nama} -- \nini dari chatbot. \ntolong diabaikan saja --18072023."
 
 # Create a multipart message
 email_message = MIMEMultipart()
@@ -22,8 +22,8 @@ email_message.attach(MIMEText(message, 'plain'))
 # SMTP server configuration
 smtp_server = 'mail.pratesis.com'
 smtp_port = 587
-smtp_username = 'suseno_haris@pratesis.com'
-smtp_password = 'pratesis052012'
+smtp_username = 'scyllainsight@pratesis.com'
+smtp_password = 'Pratesis123!'
 
 try:
     # Create a secure SSL/TLS connection to the SMTP server
