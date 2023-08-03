@@ -21,8 +21,8 @@ import sqlite3
 conn = sqlite3.connect("api.db")
 cursor = conn.cursor()
 
-with open("my_dmss.csv", "w") as csvfile:
-    writer = csv.writer(csvfile, delimiter=",")
+with open("DistChatbot.csv", "w") as csvfile:
+    writer = csv.writer(csvfile, delimiter=";")
     for row in cursor.execute("SELECT * FROM dmss"):
         writer.writerow(row)
 
