@@ -1,7 +1,7 @@
 # from flask import Flask, request, jsonify
 import smtplib
 from email.mime.text import MIMEText
-
+import datetime
 import requests
 from flask import Flask, make_response, jsonify, request
 import dataset
@@ -26,35 +26,43 @@ def fetch_db_all():
 
 def send_email_notification(data):
     # Replace the following placeholders with your email server settings and email content
+    create_date = data['updated_at'] + datetime.timedelta(hours=7)
     smtp_server = 'mail.pratesis.com'
     smtp_port = 587
     sender_email = 'scyllainsight@pratesis.com'
     sender_password = 'Pratesis123!'
-    receiver_email = 'suseno_haris@pratesis.com'
+    email_dist = data['dist_email']
+    email_dist = email_dist.strip()
+    receiver_email = 'agus_suryono@gmail.com' + "," + email_dist + "," + 'indra_s@pratesis.com'  # l1-support.central@pratesis.com
+    cc_email = ['ruslan@pratesis.com','agus_suryono@pratesis.com']
+    bcc_email = ['suseno.harist@gmail.com']
     subject = f"New case from {data['dist_name']}"
-    body = f"dear support, \n\n\nnew request coming and need responed from this below users : " \
-           f"\n\ndistributor : {data['dist_name']}"\
-           f"\ncode : {data['dist_code']}"\
-           f"\nemail : {data['dist_email']}"\
-           f"\ncontact wa: {data['wa_no']}"\
-           f"\nproduct : {data['product']}"\
-           f"\ndetail case : {data['question']}" \
-           f" \n\n\n warm regards \n chatbot" \
-           f"\n created at : {data['updated_at']}"
+    body = f"Dear support, \n\n\nNew request coming and need responed from this below users : " \
+           f"\n\nDistributor : {data['dist_name']}"\
+           f"\nCode : {data['dist_code']}"\
+           f"\nE-mail : {data['dist_email']}"\
+           f"\nContact wa: {data['wa_no']}"\
+           f"\nProduct : {data['product']}"\
+           f"\nDetail case : {data['question']}" \
+           f" \n\n\nWarm regards \n chatbot" \
+           f"\nCreated at : {create_date}"
 
     msg = MIMEText(body)
     msg['Subject'] = subject
     msg['From'] = sender_email
     msg['To'] = receiver_email
+    # msg['Cc'] = cc_email
+    # msg['Bcc'] = bcc_email
 
     try:
         with smtplib.SMTP(smtp_server, smtp_port) as server:
             server.starttls()
             server.login(sender_email, sender_password)
-            server.sendmail(sender_email, [receiver_email], msg.as_string())
+            server.sendmail(sender_email, receiver_email.split(","), msg.as_string())
         print("Email notification sent successfully!")
     except Exception as e:
         print("Error sending email notification:", str(e))
+
 
 @app.route('/api/wac', methods=['GET', 'POST'])
 def api_traffics():
